@@ -4,35 +4,155 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flood Warning System</title>
+  <!-- Menggunakan Google Fonts untuk font yang lebih elegan -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Mengatur tampilan dasar body */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Membuat container untuk konten */
+    .container {
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Menambahkan gaya pada heading */
+    h1 {
+      font-weight: 600;
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    /* Menyediakan ruang untuk grafik */
+    canvas {
+      margin-top: 20px;
+      width: 100%;
+      height: 300px;
+    }
+
+    /* Tombol simulasi data */
+    .btn {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Responsif untuk layar kecil */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      canvas {
+        height: 250px;
+      }
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>Flood Warning System</h1>
-  <canvas id="waterLevelChart" width="400" height="200"></canvas>
+  <!-- Kontainer utama -->
+  <div class="container">
+    <h1>Flood Warning System</h1>
+    <!-- Grafik akan ditampilkan di sini -->
+    <canvas id="waterLevelChart"></canvas>
+
+    <!-- Tombol untuk simulasi data (untuk testing) -->
+    <a href="#" class="btn" onclick="simulateData()">Simulate Data</a>
+  </div>
+
   <script>
-    // Data placeholder yang akan diganti dengan data asli dari AWLR
-    const data = [
+    // Data placeholder (nanti diganti dengan data dari AWLR)
+    let data = [
       { timestamp: '2024-01-01T08:00:00Z', water_level: 10 },
       { timestamp: '2024-01-01T09:00:00Z', water_level: 12 },
       { timestamp: '2024-01-01T10:00:00Z', water_level: 14 }
     ];
 
-    const labels = data.map(item => item.timestamp);
-    const values = data.map(item => item.water_level);
+    // Fungsi untuk memperbarui grafik
+    function updateChart(chart, newData) {
+      const labels = newData.map(item => new Date(item.timestamp).toLocaleTimeString());
+      const values = newData.map(item => item.water_level);
 
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = values;
+      chart.update();
+    }
+
+    // Setup awal untuk Chart.js
     const ctx = document.getElementById('waterLevelChart').getContext('2d');
-    new Chart(ctx, {
+    const waterLevelChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: data.map(item => new Date(item.timestamp).toLocaleTimeString()),
         datasets: [{
           label: 'Water Level (m)',
-          data: values,
-          borderColor: 'blue',
-          borderWidth: 2
+          data: data.map(item => item.water_level),
+          borderColor: '#007bff',
+          backgroundColor: 'rgba(0, 123, 255, 0.1)',
+          borderWidth: 2,
+          fill: true
         }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Water Level (m)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Time'
+            }
+          }
+        }
       }
     });
+
+    // Fungsi simulasi untuk menambahkan data baru
+    function simulateData() {
+      const now = new Date();
+      const lastLevel = data[data.length - 1].water_level;
+      const newLevel = lastLevel + (Math.random() * 2 - 1); // Simulasi perubahan ketinggian air
+      data.push({
+        timestamp: now.toISOString(),
+        water_level: newLevel.toFixed(2)
+      });
+
+      // Update grafik
+      updateChart(waterLevelChart, data);
+    }
   </script>
 </body>
 </html>

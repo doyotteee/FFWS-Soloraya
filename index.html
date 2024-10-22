@@ -3,156 +3,367 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flood Warning System</title>
-  <!-- Menggunakan Google Fonts untuk font yang lebih elegan -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Sistem Peringatan Banjir</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* Mengatur tampilan dasar body */
+    :root {
+      --safe-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --primary-color: #007bff;
+      --background-color: #f8f9fa;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f0f4f8;
+      background-color: var(--background-color);
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .dashboard {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-card {
+      grid-column: 1 / -1;
+    }
+
+    .status-card {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
     }
 
-    /* Membuat container untuk konten */
-    .container {
-      background-color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 600px;
-      width: 100%;
+    .status-indicator {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 10px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      position: relative;
+      transition: border-color 0.3s ease;
+    }
+
+    .status-indicator.safe {
+      border-color: var(--safe-color);
+    }
+
+    .status-indicator.warning {
+      border-color: var(--warning-color);
+    }
+
+    .status-indicator.danger {
+      border-color: var(--danger-color);
+      animation: pulse 2s infinite;
+    }
+
+    .current-level {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .status-text {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-top: 10px;
       text-align: center;
     }
 
-    /* Menambahkan gaya pada heading */
-    h1 {
-      font-weight: 600;
-      font-size: 2rem;
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .info-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 500;
       color: #333;
-      margin-bottom: 20px;
     }
 
-    /* Menyediakan ruang untuk grafik */
-    canvas {
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
       margin-top: 20px;
-      width: 100%;
-      height: 300px;
     }
 
-    /* Tombol simulasi data */
     .btn {
-      display: inline-block;
-      background-color: #007bff;
-      color: white;
       padding: 10px 20px;
-      margin-top: 20px;
+      border: none;
       border-radius: 5px;
-      text-decoration: none;
-      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      font-weight: 500;
+      transition: all 0.3s ease;
     }
 
-    .btn:hover {
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
       background-color: #0056b3;
     }
 
-    /* Responsif untuk layar kecil */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 20px;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+      }
+    }
+
     @media (max-width: 768px) {
-      h1 {
-        font-size: 1.5rem;
+      .dashboard {
+        grid-template-columns: 1fr;
       }
 
-      canvas {
-        height: 250px;
+      .status-indicator {
+        width: 120px;
+        height: 120px;
+      }
+
+      .current-level {
+        font-size: 1.5rem;
       }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </head>
 <body>
-  <!-- Kontainer utama -->
-  <div class="container">
-    <h1>Flood Warning System</h1>
-    <!-- Grafik akan ditampilkan di sini -->
-    <canvas id="waterLevelChart"></canvas>
+  <div class="dashboard">
+    <!-- Main Card with Chart -->
+    <div class="card main-card">
+      <h1 style="text-align: center; margin-bottom: 20px;">Sistem Peringatan Banjir</h1>
+      <div class="chart-container">
+        <canvas id="waterLevelChart"></canvas>
+      </div>
+    </div>
 
-    <!-- Tombol untuk simulasi data (untuk testing) -->
-    <a href="#" class="btn" onclick="simulateData()">Simulate Data</a>
+    <!-- Status Card -->
+    <div class="card status-card">
+      <h2>Status Level Air</h2>
+      <div id="statusIndicator" class="status-indicator safe">
+        <div class="current-level">0.0 m</div>
+      </div>
+      <div id="statusText" class="status-text">Status: Normal</div>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Level Terendah</div>
+          <div id="minLevel" class="info-value">0.0 m</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Level Tertinggi</div>
+          <div id="maxLevel" class="info-value">0.0 m</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Rata-rata</div>
+          <div id="avgLevel" class="info-value">0.0 m</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card">
+      <h2>Informasi Level Air</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Batas Aman</div>
+          <div class="info-value">0 - 10 m</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Batas Waspada</div>
+          <div class="info-value">10 - 15 m</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Batas Bahaya</div>
+          <div class="info-value">> 15 m</div>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn btn-primary" onclick="simulateData()">Simulasi Data</button>
+        <button class="btn btn-primary" onclick="resetData()">Reset Data</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Data placeholder (nanti diganti dengan data dari AWLR)
-    let data = [
-      { timestamp: '2024-01-01T08:00:00Z', water_level: 10 },
-      { timestamp: '2024-01-01T09:00:00Z', water_level: 12 },
-      { timestamp: '2024-01-01T10:00:00Z', water_level: 14 }
-    ];
+    // Data initialization
+    let data = [];
+    const maxDataPoints = 20;
 
-    // Fungsi untuk memperbarui grafik
-    function updateChart(chart, newData) {
-      const labels = newData.map(item => new Date(item.timestamp).toLocaleTimeString());
-      const values = newData.map(item => item.water_level);
+    // Status thresholds
+    const SAFE_THRESHOLD = 10;
+    const WARNING_THRESHOLD = 15;
 
-      chart.data.labels = labels;
-      chart.data.datasets[0].data = values;
-      chart.update();
-    }
-
-    // Setup awal untuk Chart.js
+    // Initialize Chart.js
     const ctx = document.getElementById('waterLevelChart').getContext('2d');
     const waterLevelChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: data.map(item => new Date(item.timestamp).toLocaleTimeString()),
+        labels: [],
         datasets: [{
-          label: 'Water Level (m)',
-          data: data.map(item => item.water_level),
+          label: 'Level Air (m)',
+          data: [],
           borderColor: '#007bff',
           backgroundColor: 'rgba(0, 123, 255, 0.1)',
           borderWidth: 2,
-          fill: true
+          fill: true,
+          tension: 0.4
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        },
         scales: {
           y: {
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Water Level (m)'
+              text: 'Level Air (m)'
             }
           },
           x: {
             title: {
               display: true,
-              text: 'Time'
+              text: 'Waktu'
             }
           }
         }
       }
     });
 
-    // Fungsi simulasi untuk menambahkan data baru
+    // Update status indicator
+    function updateStatus(waterLevel) {
+      const indicator = document.getElementById('statusIndicator');
+      const statusText = document.getElementById('statusText');
+      const currentLevel = indicator.querySelector('.current-level');
+      
+      currentLevel.textContent = `${waterLevel.toFixed(1)} m`;
+
+      if (waterLevel > WARNING_THRESHOLD) {
+        indicator.className = 'status-indicator danger';
+        statusText.textContent = 'Status: BAHAYA!';
+        statusText.style.color = 'var(--danger-color)';
+      } else if (waterLevel > SAFE_THRESHOLD) {
+        indicator.className = 'status-indicator warning';
+        statusText.textContent = 'Status: Waspada';
+        statusText.style.color = 'var(--warning-color)';
+      } else {
+        indicator.className = 'status-indicator safe';
+        statusText.textContent = 'Status: Normal';
+        statusText.style.color = 'var(--safe-color)';
+      }
+    }
+
+    // Update statistics
+    function updateStats() {
+      if (data.length === 0) return;
+
+      const levels = data.map(item => item.water_level);
+      const min = Math.min(...levels);
+      const max = Math.max(...levels);
+      const avg = levels.reduce((a, b) => a + b, 0) / levels.length;
+
+      document.getElementById('minLevel').textContent = `${min.toFixed(1)} m`;
+      document.getElementById('maxLevel').textContent = `${max.toFixed(1)} m`;
+      document.getElementById('avgLevel').textContent = `${avg.toFixed(1)} m`;
+    }
+
+    // Simulate new data
     function simulateData() {
       const now = new Date();
-      const lastLevel = data[data.length - 1].water_level;
-      const newLevel = lastLevel + (Math.random() * 2 - 1); // Simulasi perubahan ketinggian air
+      const lastLevel = data.length > 0 ? data[data.length - 1].water_level : 5;
+      // Simulate more realistic water level changes
+      const change = Math.random() * 2 - 1; // Random change between -1 and 1
+      const newLevel = Math.max(0, lastLevel + change); // Ensure level doesn't go below 0
+
       data.push({
-        timestamp: now.toISOString(),
-        water_level: newLevel.toFixed(2)
+        timestamp: now,
+        water_level: newLevel
       });
 
-      // Update grafik
-      updateChart(waterLevelChart, data);
+      // Keep only the last maxDataPoints
+      if (data.length > maxDataPoints) {
+        data.shift();
+      }
+
+      // Update chart
+      waterLevelChart.data.labels = data.map(item => item.timestamp.toLocaleTimeString());
+      waterLevelChart.data.datasets[0].data = data.map(item => item.water_level);
+      waterLevelChart.update();
+
+      // Update status and stats
+      updateStatus(newLevel);
+      updateStats();
     }
+
+    // Reset data
+    function resetData() {
+      data = [];
+      waterLevelChart.data.labels = [];
+      waterLevelChart.data.datasets[0].data = [];
+      waterLevelChart.update();
+      
+      updateStatus(0);
+      document.getElementById('minLevel').textContent = '0.0 m';
+      document.getElementById('maxLevel').textContent = '0.0 m';
+      document.getElementById('avgLevel').textContent = '0.0 m';
+    }
+
+    // Initialize with some data
+    simulateData();
   </script>
 </body>
 </html>

@@ -1,1 +1,255 @@
+/* Enhanced Root Variables */
+:root {
+  --safe-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --primary-color: #007bff;
+  --background-color: #f0f2f5;
+  --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --gradient-primary: linear-gradient(135deg, #007bff, #0056b3);
+  --gradient-safe: linear-gradient(135deg, #28a745, #208838);
+  --gradient-warning: linear-gradient(135deg, #ffc107, #d39e00);
+  --gradient-danger: linear-gradient(135deg, #dc3545, #bd2130);
+}
 
+/* Modern Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--background-color);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* Enhanced Dashboard Layout */
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  padding: 1.5rem;
+}
+
+/* Enhanced Card Styles */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.main-card {
+  grid-column: 1 / -1;
+}
+
+/* Enhanced Status Indicator */
+.status-indicator {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 12px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem auto;
+  position: relative;
+  transition: all 0.5s ease;
+  background: white;
+}
+
+.status-indicator::before {
+  content: '';
+  position: absolute;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  border-radius: 50%;
+  background: transparent;
+  z-index: -1;
+}
+
+.status-indicator.safe {
+  border-color: var(--safe-color);
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.2);
+}
+
+.status-indicator.warning {
+  border-color: var(--warning-color);
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+}
+
+.status-indicator.danger {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 30px rgba(220, 53, 69, 0.3);
+  animation: danger-pulse 2s infinite;
+}
+
+/* Enhanced Alert Banner */
+.alert-banner {
+  background: var(--gradient-danger);
+  color: white;
+  text-align: center;
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(220, 53, 69, 0.2);
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.alert-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Enhanced Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.info-item {
+  background: linear-gradient(145deg, #ffffff, #f0f2f5);
+  padding: 1.25rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.info-item:hover {
+  transform: translateY(-3px);
+}
+
+.info-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Enhanced Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+}
+
+/* Enhanced Chart Container */
+.chart-container {
+  position: relative;
+  height: 400px;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom Animations */
+@keyframes danger-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+/* Responsive Design Improvements */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .dashboard {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  .status-indicator {
+    width: 150px;
+    height: 150px;
+  }
+
+  .chart-container {
+    height: 300px;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Typography Enhancements */
+h1, h2 {
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+.current-level {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}

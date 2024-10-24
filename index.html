@@ -10,6 +10,7 @@
       --safe-color: #28a745;
       --warning-color: #ffc107;
       --danger-color: #dc3545;
+      --early-warning-color: #ff9800;
       --primary-color: #007bff;
       --background-color: #f8f9fa;
     }
@@ -66,6 +67,11 @@
       border-color: var(--safe-color);
     }
 
+    .status-indicator.early-warning {
+      border-color: var(--early-warning-color);
+      animation: early-warning-pulse 2s infinite;
+    }
+
     .status-indicator.warning {
       border-color: var(--warning-color);
     }
@@ -75,11 +81,8 @@
       animation: pulse 2s infinite;
     }
 
-    /* Alert Banner Styles */
     .alert-banner {
       display: none;
-      background-color: var(--danger-color);
-      color: white;
       text-align: center;
       padding: 15px;
       font-size: 1.5rem;
@@ -87,17 +90,25 @@
       margin-bottom: 20px;
       border-radius: 8px;
       animation: blink-animation 1s infinite;
-      box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
     }
 
     .alert-banner.show {
       display: block;
     }
 
-    @keyframes blink-animation {
-      0% { background-color: var(--danger-color); }
-      50% { background-color: #ff0000; }
-      100% { background-color: var(--danger-color); }
+    .alert-banner.early-warning {
+      background-color: var(--early-warning-color);
+      color: white;
+    }
+
+    .alert-banner.warning {
+      background-color: var(--warning-color);
+      color: black;
+    }
+
+    .alert-banner.danger {
+      background-color: var(--danger-color);
+      color: white;
     }
 
     .current-level {
@@ -111,19 +122,6 @@
       font-weight: 500;
       margin-top: 10px;
       text-align: center;
-    }
-
-    .danger-text {
-      color: var(--danger-color);
-      font-weight: 700;
-      animation: danger-pulse 1s infinite;
-      text-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
-    }
-
-    @keyframes danger-pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
     }
 
     .info-grid {
@@ -173,10 +171,6 @@
       color: white;
     }
 
-    .btn-primary:hover {
-      background-color: #0056b3;
-    }
-
     .chart-container {
       position: relative;
       height: 300px;
@@ -184,47 +178,25 @@
     }
 
     @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
-      }
-      70% {
-        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
     }
 
-    @media (max-width: 768px) {
-      .dashboard {
-        grid-template-columns: 1fr;
-      }
-
-      .status-indicator {
-        width: 120px;
-        height: 120px;
-      }
-
-      .current-level {
-        font-size: 1.5rem;
-      }
-
-      .alert-banner {
-        font-size: 1.2rem;
-        padding: 10px;
-      }
+    @keyframes early-warning-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </head>
 <body>
-  <!-- Alert Banner -->
   <div id="alertBanner" class="alert-banner">
-    ⚠️ PERINGATAN BAHAYA BANJIR! SEGERA EVAKUASI KE TEMPAT YANG LEBIH TINGGI! ⚠️
+    ⚠️ PERINGATAN! ⚠️
   </div>
 
   <div class="dashboard">
-    <!-- Main Card with Chart -->
     <div class="card main-card">
       <h1 style="text-align: center; margin-bottom: 20px;">Sistem Peringatan Banjir</h1>
       <div class="chart-container">
@@ -232,7 +204,6 @@
       </div>
     </div>
 
-    <!-- Status Card -->
     <div class="card status-card">
       <h2>Status Level Air</h2>
       <div id="statusIndicator" class="status-indicator safe">
@@ -256,10 +227,13 @@
       </div>
     </div>
 
-    <!-- Info Card -->
     <div class="card">
       <h2>Informasi Level Air</h2>
       <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Peringatan Dini</div>
+          <div class="info-value">5 m</div>
+        </div>
         <div class="info-item">
           <div class="info-label">Batas Aman</div>
           <div class="info-value">0 - 10 m</div>
@@ -282,15 +256,13 @@
   </div>
 
   <script>
-    // Data initialization
     let data = [];
     const maxDataPoints = 20;
 
-    // Status thresholds
+    const EARLY_WARNING_THRESHOLD = 5;
     const SAFE_THRESHOLD = 10;
     const WARNING_THRESHOLD = 15;
 
-    // Initialize Chart.js
     const ctx = document.getElementById('waterLevelChart').getContext('2d');
     const waterLevelChart = new Chart(ctx, {
       type: 'line',
@@ -332,7 +304,6 @@
       }
     });
 
-    // Update status indicator
     function updateStatus(waterLevel) {
       const indicator = document.getElementById('statusIndicator');
       const statusText = document.getElementById('statusText');
@@ -343,22 +314,26 @@
 
       if (waterLevel > WARNING_THRESHOLD) {
         indicator.className = 'status-indicator danger';
-        statusText.innerHTML = '<span class="danger-text">Status: BAHAYA!</span>';
-        alertBanner.classList.add('show');
+        statusText.innerHTML = '<span style="color: var(--danger-color)">Status: BAHAYA!</span>';
+        alertBanner.textContent = '⚠️ PERINGATAN BAHAYA BANJIR! SEGERA EVAKUASI! ⚠️';
+        alertBanner.className = 'alert-banner danger show';
       } else if (waterLevel > SAFE_THRESHOLD) {
         indicator.className = 'status-indicator warning';
-        statusText.textContent = 'Status: Waspada';
-        statusText.style.color = 'var(--warning-color)';
-        alertBanner.classList.remove('show');
+        statusText.innerHTML = '<span style="color: var(--warning-color)">Status: Waspada</span>';
+        alertBanner.textContent = '⚠️ WASPADA! Level Air Melewati Batas Aman! ⚠️';
+        alertBanner.className = 'alert-banner warning show';
+      } else if (waterLevel > EARLY_WARNING_THRESHOLD) {
+        indicator.className = 'status-indicator early-warning';
+        statusText.innerHTML = '<span style="color: var(--early-warning-color)">Status: Peringatan Dini</span>';
+        alertBanner.textContent = '⚠️ PERHATIAN! Level Air Mencapai 5m! ⚠️';
+        alertBanner.className = 'alert-banner early-warning show';
       } else {
         indicator.className = 'status-indicator safe';
-        statusText.textContent = 'Status: Normal';
-        statusText.style.color = 'var(--safe-color)';
-        alertBanner.classList.remove('show');
+        statusText.innerHTML = '<span style="color: var(--safe-color)">Status: Normal</span>';
+        alertBanner.className = 'alert-banner';
       }
     }
 
-    // Update statistics
     function updateStats() {
       if (data.length === 0) return;
 
@@ -372,35 +347,29 @@
       document.getElementById('avgLevel').textContent = `${avg.toFixed(1)} m`;
     }
 
-    // Simulate new data
     function simulateData() {
       const now = new Date();
-      const lastLevel = data.length > 0 ? data[data.length - 1].water_level : 5;
-      // Simulate more realistic water level changes
-      const change = Math.random() * 2 - 1; // Random change between -1 and 1
-      const newLevel = Math.max(0, lastLevel + change); // Ensure level doesn't go below 0
+      const lastLevel = data.length > 0 ? data[data.length - 1].water_level : 3;
+      const change = Math.random() * 2 - 1;
+      const newLevel = Math.max(0, lastLevel + change);
 
       data.push({
         timestamp: now,
         water_level: newLevel
       });
 
-      // Keep only the last maxDataPoints
       if (data.length > maxDataPoints) {
         data.shift();
       }
 
-      // Update chart
       waterLevelChart.data.labels = data.map(item => item.timestamp.toLocaleTimeString());
       waterLevelChart.data.datasets[0].data = data.map(item => item.water_level);
       waterLevelChart.update();
 
-      // Update status and stats
       updateStatus(newLevel);
       updateStats();
     }
 
-    // Reset data
     function resetData() {
       data = [];
       waterLevelChart.data.labels = [];
@@ -411,7 +380,6 @@
       document.getElementById('minLevel').textContent = '0.0 m';
       document.getElementById('maxLevel').textContent = '0.0 m';
       document.getElementById('avgLevel').textContent = '0.0 m';
-      document.getElementById('alertBanner').classList.remove('show');
     }
 
     // Initialize with some data

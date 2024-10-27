@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Peringatan Banjir</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <link rel="stylesheet" href="styles.css">
-  <script src="scripts.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </head>
 <body>
-  <div id="alertBanner" class="alert-banner">
-    ⚠️ PERINGATAN BANJIR! HARAP WASPADA! ⚠️
-  </div>
-  
+  <div id="alertBanner" class="alert-banner"> ⚠️ PERINGATAN! ⚠️ </div>
+
   <div class="dashboard">
     <div class="card main-card">
       <h1 style="text-align: center; margin-bottom: 20px;">Sistem Peringatan Banjir</h1>
@@ -21,7 +18,7 @@
         <canvas id="waterLevelChart"></canvas>
       </div>
     </div>
-    
+
     <div class="card status-card">
       <h2>Status Level Air</h2>
       <div id="statusIndicator" class="status-indicator safe">
@@ -44,7 +41,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="card">
       <h2>Informasi Level Air</h2>
       <div class="info-grid">
@@ -67,11 +64,12 @@
       </div>
       
       <div class="controls">
-        <button class="btn" onclick="simulateData()">Simulasi Data</button>
-        <button class="btn" onclick="resetData()">Reset Data</button>
-        <button class="btn" onclick="toggleAutoUpdate()">Auto Update</button>
+        <button class="btn btn-primary" onclick="simulateData()">Simulasi Data</button>
+        <button class="btn btn-primary" onclick="resetData()">Reset Data</button>
       </div>
     </div>
   </div>
+
+  <script src="scripts.js"></script>
 </body>
 </html>

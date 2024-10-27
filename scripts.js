@@ -1,5 +1,6 @@
 let waterLevel = 0;
 let waterLevelData = [];
+let labels = [];
 let autoUpdateInterval = null;
 let chart = null;
 
@@ -10,11 +11,18 @@ function simulateData() {
   
   updateStatus();
   waterLevelData.push(waterLevel);
+
+  // Get current time
+  const now = new Date();
+  const timeString = now.toLocaleTimeString();
+
+  labels.push(timeString);
   
   // Remove this line if you want to keep all data points
-  //if (waterLevelData.length > 20) {
-  //waterLevelData.shift();
-  //}
+  // if (waterLevelData.length > 20) {
+  //   waterLevelData.shift();
+  //   labels.shift();
+  // }
   
   updateChart();
 }
@@ -22,6 +30,7 @@ function simulateData() {
 function resetData() {
   waterLevel = 0;
   waterLevelData = [];
+  labels = [];
   updateStatus();
   updateChart();
 }
@@ -84,7 +93,7 @@ function updateChart() {
     chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: Array.from({ length: waterLevelData.length }, (_, i) => i + 1),
+        labels: labels,
         datasets: [{
           label: 'Tinggi Permukaan Air',
           data: waterLevelData,
@@ -100,12 +109,24 @@ function updateChart() {
           y: {
             beginAtZero: true,
             max: 20
+          },
+          x: {
+            type: 'time',
+            time: {
+              unit: 'minute',
+              tooltipFormat: 'HH:mm:ss',
+              displayFormats: {
+                second: 'HH:mm:ss',
+                minute: 'HH:mm',
+                hour: 'HH:mm'
+              }
+            }
           }
         }
       }
     });
   } else {
-    chart.data.labels = Array.from({ length: waterLevelData.length }, (_, i) => i + 1);
+    chart.data.labels = labels;
     chart.data.datasets[0].data = waterLevelData;
     chart.update();
   }

@@ -23,6 +23,8 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8); /* Tambahkan transparansi untuk lebih fokus ke konten */
+  border-radius: 10px;
 }
 
 .card {
@@ -41,6 +43,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20px; /* Tambahkan padding agar elemen lebih tertata */
 }
 
 .status-indicator {
@@ -69,6 +72,7 @@ body {
   background: #f8f9fa;
   padding: 10px;
   border-radius: 5px;
+  text-align: center;
 }
 
 .info-label {
@@ -98,4 +102,19 @@ body {
 
 .btn-primary:hover {
   background-color: #0056b3;
+}
+
+/* Pastikan grafik memiliki ukuran yang baik */
+canvas {
+  width: 100% !important;
+  max-width: 1000px;
+  height: auto;
+}
+
+/* Atur ulang margin atau padding jika perlu */
+.chart-container {
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

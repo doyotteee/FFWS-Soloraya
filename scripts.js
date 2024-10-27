@@ -11,10 +11,10 @@ function simulateData() {
   updateStatus();
   waterLevelData.push(waterLevel);
   
-  // Keep only last 20 data points for better visualization
-  if (waterLevelData.length > 20) {
-    waterLevelData.shift();
-  }
+  // Remove this line if you want to keep all data points
+  // if (waterLevelData.length > 20) {
+  //   waterLevelData.shift();
+  // }
   
   updateChart();
 }

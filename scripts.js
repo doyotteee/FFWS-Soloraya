@@ -1,125 +1,110 @@
-let waterLevel = 0;
-let waterLevelData = [];
-let autoUpdateInterval = null;
-let chart = null;
+let data = [];
+const maxDataPoints = 20;
 
-function simulateData() {
-  const change = (Math.random() - 0.5) * 2; 
-  waterLevel = Math.max(0, Math.min(20, waterLevel + change));
-  
-  updateStatus();
-  waterLevelData.push(waterLevel);
-  
-  if (waterLevelData.length > 20) {
-    waterLevelData.shift();
+const EARLY_WARNING_THRESHOLD = 5;
+const SAFE_THRESHOLD = 10;
+const WARNING_THRESHOLD = 15;
+
+const ctx = document.getElementById('waterLevelChart').getContext('2d');
+const waterLevelChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: 'Level Air (m)',
+      data: [],
+      borderColor: '#007bff',
+      backgroundColor: 'rgba(0, 123, 255, 0.1)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        display: true
+      },
+      y: {
+        display: true,
+        suggestedMin: 0,
+        suggestedMax: 20
+      }
+    }
   }
-  
-  updateChart();
+});
+
+function updateChart(newData) {
+  const labels = waterLevelChart.data.labels;
+  if (labels.length >= maxDataPoints) {
+    labels.shift();
+    waterLevelChart.data.datasets[0].data.shift();
+  }
+
+  const currentTime = new Date().toLocaleTimeString();
+  labels.push(currentTime);
+  waterLevelChart.data.datasets[0].data.push(newData);
+
+  waterLevelChart.update();
 }
 
-function resetData() {
-  waterLevel = 0;
-  waterLevelData = [];
-  updateStatus();
-  updateChart();
-}
-
-function updateStatus() {
+function updateStatus(level) {
   const statusIndicator = document.getElementById('statusIndicator');
   const statusText = document.getElementById('statusText');
   const alertBanner = document.getElementById('alertBanner');
-  const currentLevel = document.querySelector('.current-level');
-  const minLevel = document.getElementById('minLevel');
-  const maxLevel = document.getElementById('maxLevel');
-  const avgLevel = document.getElementById('avgLevel');
-  
-  currentLevel.textContent = `${waterLevel.toFixed(1)} m`;
-  
-  const min = Math.min(...waterLevelData).toFixed(1);
-  const max = Math.max(...waterLevelData).toFixed(1);
-  const avg = (waterLevelData.reduce((acc, val) => acc + val, 0) / waterLevelData.length).toFixed(1);
-  
-  minLevel.textContent = `${min} m`;
-  maxLevel.textContent = `${max} m`;
-  avgLevel.textContent = `${avg} m`;
-  
-  if (waterLevel >= 15) {
-    statusIndicator.className = 'status-indicator danger';
-    statusText.textContent = 'Status: Bahaya';
-    alertBanner.style.display = 'block';
-  } else if (waterLevel >= 10) {
-    statusIndicator.className = 'status-indicator warning';
-    statusText.textContent = 'Status: Waspada';
-    alertBanner.style.display = 'none';
-  } else if (waterLevel >= 5) {
-    statusIndicator.className = 'status-indicator early-warning';
-    statusText.textContent = 'Status: Peringatan Dini';
-    alertBanner.style.display = 'none';
+  let status = 'safe';
+  let statusMessage = 'Status: Normal';
+
+  if (level > WARNING_THRESHOLD) {
+    status = 'danger';
+    statusMessage = 'Status: Bahaya';
+    alertBanner.className = 'alert-banner show danger';
+    alertBanner.textContent = '⚠️ PERINGATAN BAHAYA! ⚠️';
+  } else if (level > SAFE_THRESHOLD) {
+    status = 'warning';
+    statusMessage = 'Status: Waspada';
+    alertBanner.className = 'alert-banner show warning';
+    alertBanner.textContent = '⚠️ PERINGATAN WASPADA! ⚠️';
+  } else if (level >= EARLY_WARNING_THRESHOLD) {
+    status = 'early-warning';
+    statusMessage = 'Status: Peringatan Dini';
+    alertBanner.className = 'alert-banner show early-warning';
+    alertBanner.textContent = '⚠️ PERINGATAN DINI! ⚠️';
   } else {
-    statusIndicator.className = 'status-indicator safe';
-    statusText.textContent = 'Status: Normal';
-    alertBanner.style.display = 'none';
+    alertBanner.className = 'alert-banner';
   }
-  
-  const filledHeight = `${(waterLevel / 20) * 100}%`;
-  statusIndicator.style.setProperty('--filled-height', filledHeight);
+
+  statusIndicator.className = `status-indicator ${status}`;
+  statusText.textContent = statusMessage;
+  document.querySelector('.current-level').textContent = `${level.toFixed(1)} m`;
 }
 
-function toggleAutoUpdate() {
-  if (autoUpdateInterval) {
-    clearInterval(autoUpdateInterval);
-    autoUpdateInterval = null;
-  } else {
-    autoUpdateInterval = setInterval(simulateData, 2000);
-  }
+function updateInfo() {
+  const levels = waterLevelChart.data.datasets[0].data;
+  const minLevel = Math.min(...levels);
+  const maxLevel = Math.max(...levels);
+  const avgLevel = levels.reduce((acc, level) => acc + level, 0) / levels.length;
+
+  document.getElementById('minLevel').textContent = `${minLevel.toFixed(1)} m`;
+  document.getElementById('maxLevel').textContent = `${maxLevel.toFixed(1)} m`;
+  document.getElementById('avgLevel').textContent = `${avgLevel.toFixed(1)} m`;
 }
 
-function updateChart() {
-  if (!chart) {
-    const ctx = document.getElementById('waterLevelChart').getContext('2d');
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: Array.from({ length: waterLevelData.length }, (_, i) => i + 1),
-        datasets: [{
-          label: 'Level Air (m)',
-          data: waterLevelData,
-          borderColor: '#007bff',
-          backgroundColor: 'rgba(0, 123, 255, 0.2)',
-          borderWidth: 2,
-          fill: true,
-        }],
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Waktu',
-            },
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Level Air (m)',
-            },
-            suggestedMin: 0,
-            suggestedMax: 20,
-          },
-        },
-      },
-    });
-  } else {
-    chart.data.labels = Array.from({ length: waterLevelData.length }, (_, i) => i + 1);
-    chart.data.datasets[0].data = waterLevelData;
-    chart.update();
-  }
+function simulateData() {
+  const newData = Math.random() * 20;
+  updateChart(newData);
+  updateStatus(newData);
+  updateInfo();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  updateStatus();
-  updateChart();
-});
+function resetData() {
+  data = [];
+  waterLevelChart.data.labels = [];
+  waterLevelChart.data.datasets[0].data = [];
+  waterLevelChart.update();
+
+  updateStatus(0);
+  updateInfo();
+}

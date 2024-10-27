@@ -6,15 +6,15 @@ let chart = null;
 function simulateData() {
   // Simulate more realistic water level changes
   const change = (Math.random() - 0.5) * 2; // Random change between -1 and 1
-  waterLevel = Math.max(0, Math.min(30, waterLevel + change));
+  waterLevel = Math.max(0, Math.min(20, waterLevel + change));
   
   updateStatus();
   waterLevelData.push(waterLevel);
   
   // Remove this line if you want to keep all data points
-  if (waterLevelData.length > 30) {
-  waterLevelData.shift();
-  }
+  //if (waterLevelData.length > 20) {
+  //waterLevelData.shift();
+  //}
   
   updateChart();
 }

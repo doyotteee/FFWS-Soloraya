@@ -1,110 +1,117 @@
-let data = [];
-const maxDataPoints = 20;
-
-const EARLY_WARNING_THRESHOLD = 5;
-const SAFE_THRESHOLD = 10;
-const WARNING_THRESHOLD = 15;
-
-const ctx = document.getElementById('waterLevelChart').getContext('2d');
-const waterLevelChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: [{
-      label: 'Level Air (m)',
-      data: [],
-      borderColor: '#007bff',
-      backgroundColor: 'rgba(0, 123, 255, 0.1)',
-      borderWidth: 2,
-      fill: true,
-      tension: 0.4
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        display: true
-      },
-      y: {
-        display: true,
-        suggestedMin: 0,
-        suggestedMax: 20
-      }
-    }
-  }
-});
-
-function updateChart(newData) {
-  const labels = waterLevelChart.data.labels;
-  if (labels.length >= maxDataPoints) {
-    labels.shift();
-    waterLevelChart.data.datasets[0].data.shift();
-  }
-
-  const currentTime = new Date().toLocaleTimeString();
-  labels.push(currentTime);
-  waterLevelChart.data.datasets[0].data.push(newData);
-
-  waterLevelChart.update();
-}
-
-function updateStatus(level) {
-  const statusIndicator = document.getElementById('statusIndicator');
-  const statusText = document.getElementById('statusText');
-  const alertBanner = document.getElementById('alertBanner');
-  let status = 'safe';
-  let statusMessage = 'Status: Normal';
-
-  if (level > WARNING_THRESHOLD) {
-    status = 'danger';
-    statusMessage = 'Status: Bahaya';
-    alertBanner.className = 'alert-banner show danger';
-    alertBanner.textContent = '⚠️ PERINGATAN BAHAYA! ⚠️';
-  } else if (level > SAFE_THRESHOLD) {
-    status = 'warning';
-    statusMessage = 'Status: Waspada';
-    alertBanner.className = 'alert-banner show warning';
-    alertBanner.textContent = '⚠️ PERINGATAN WASPADA! ⚠️';
-  } else if (level >= EARLY_WARNING_THRESHOLD) {
-    status = 'early-warning';
-    statusMessage = 'Status: Peringatan Dini';
-    alertBanner.className = 'alert-banner show early-warning';
-    alertBanner.textContent = '⚠️ PERINGATAN DINI! ⚠️';
-  } else {
-    alertBanner.className = 'alert-banner';
-  }
-
-  statusIndicator.className = `status-indicator ${status}`;
-  statusText.textContent = statusMessage;
-  document.querySelector('.current-level').textContent = `${level.toFixed(1)} m`;
-}
-
-function updateInfo() {
-  const levels = waterLevelChart.data.datasets[0].data;
-  const minLevel = Math.min(...levels);
-  const maxLevel = Math.max(...levels);
-  const avgLevel = levels.reduce((acc, level) => acc + level, 0) / levels.length;
-
-  document.getElementById('minLevel').textContent = `${minLevel.toFixed(1)} m`;
-  document.getElementById('maxLevel').textContent = `${maxLevel.toFixed(1)} m`;
-  document.getElementById('avgLevel').textContent = `${avgLevel.toFixed(1)} m`;
-}
+let waterLevel = 0;
+let waterLevelData = [];
+let autoUpdateInterval = null;
+let chart = null;
 
 function simulateData() {
-  const newData = Math.random() * 20;
-  updateChart(newData);
-  updateStatus(newData);
-  updateInfo();
+  // Simulate more realistic water level changes
+  const change = (Math.random() - 0.5) * 2; // Random change between -1 and 1
+  waterLevel = Math.max(0, Math.min(20, waterLevel + change));
+  
+  updateStatus();
+  waterLevelData.push(waterLevel);
+  
+  // Keep only last 20 data points for better visualization
+  if (waterLevelData.length > 20) {
+    waterLevelData.shift();
+  }
+  
+  updateChart();
 }
 
 function resetData() {
-  data = [];
-  waterLevelChart.data.labels = [];
-  waterLevelChart.data.datasets[0].data = [];
-  waterLevelChart.update();
-
-  updateStatus(0);
-  updateInfo();
+  waterLevel = 0;
+  waterLevelData = [];
+  updateStatus();
+  updateChart();
 }
+
+function toggleAutoUpdate() {
+  if (autoUpdateInterval) {
+    clearInterval(autoUpdateInterval);
+    autoUpdateInterval = null;
+  } else {
+    autoUpdateInterval = setInterval(simulateData, 1000);
+  }
+}
+
+function updateStatus() {
+  const statusIndicator = document.getElementById('statusIndicator');
+  const statusText = document.getElementById('statusText');
+  const currentLevelElem = document.querySelector('.current-level');
+  const minLevelElem = document.getElementById('minLevel');
+  const maxLevelElem = document.getElementById('maxLevel');
+  const avgLevelElem = document.getElementById('avgLevel');
+  
+  currentLevelElem.textContent = `${waterLevel.toFixed(1)} m`;
+  
+  if (waterLevel < 5) {
+    statusIndicator.className = 'status-indicator safe';
+    statusText.textContent = 'Status: Normal';
+  } else if (waterLevel >= 5 && waterLevel < 10) {
+    statusIndicator.className = 'status-indicator warning';
+    statusText.textContent = 'Status: Waspada';
+  } else if (waterLevel >= 10 && waterLevel < 15) {
+    statusIndicator.className = 'status-indicator danger';
+    statusText.textContent = 'Status: Bahaya';
+  } else {
+    statusIndicator.className = 'status-indicator danger';
+    statusText.textContent = 'Status: Kritis';
+  }
+  
+  if (waterLevelData.length > 0) {
+    minLevelElem.textContent = `${Math.min(...waterLevelData).toFixed(1)} m`;
+    maxLevelElem.textContent = `${Math.max(...waterLevelData).toFixed(1)} m`;
+    avgLevelElem.textContent = `${(waterLevelData.reduce((a, b) => a + b, 0) / waterLevelData.length).toFixed(1)} m`;
+  } else {
+    minLevelElem.textContent = '0.0 m';
+    maxLevelElem.textContent = '0.0 m';
+    avgLevelElem.textContent = '0.0 m';
+  }
+
+  const alertBanner = document.getElementById('alertBanner');
+  if (waterLevel >= 5) {
+    alertBanner.style.display = 'block';
+  } else {
+    alertBanner.style.display = 'none';
+  }
+}
+
+function updateChart() {
+  const ctx = document.getElementById('waterLevelChart').getContext('2d');
+  
+  if (!chart) {
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: waterLevelData.length }, (_, i) => i + 1),
+        datasets: [{
+          label: 'Tinggi Permukaan Air',
+          data: waterLevelData,
+          backgroundColor: 'rgba(0, 123, 255, 0.2)',
+          borderColor: 'rgba(0, 123, 255, 1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 20
+          }
+        }
+      }
+    });
+  } else {
+    chart.data.labels = Array.from({ length: waterLevelData.length }, (_, i) => i + 1);
+    chart.data.datasets[0].data = waterLevelData;
+    chart.update();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateStatus();
+  updateChart();
+});

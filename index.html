@@ -1,16 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Peringatan Banjir</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <style>
+    :root {
+      --safe-color: #28a745;
+      --warning-color: #ffc107; 
+      --danger-color: #dc3545;
+      --early-warning-color: #ff9800;
+      --primary-color: #007bff;
+      --background-color: #f8f9fa;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/api/placeholder/1920/1080');
+      background-size: cover;
+      color: #333;
+    }
+
+    .alert-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--danger-color);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-weight: bold;
+      display: none;
+      z-index: 1000;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.5; }
+    }
+
+    .dashboard {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .main-card {
+      grid-column: 1 / -1;
+    }
+
+    .status-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+    }
+
+    .status-indicator {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+      transition: all 0.3s ease;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-indicator::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 0%;
+      background-color: rgba(255,255,255,0.2);
+      transition: height 0.5s ease;
+    }
+
+    .safe { background-color: var(--safe-color); }
+    .warning { background-color: var(--warning-color); }
+    .danger { background-color: var(--danger-color); }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .info-item {
+      background: var(--background-color);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .info-item:hover {
+      transform: scale(1.05);
+    }
+
+    .info-label {
+      font-size: 14px;
+      color: #6c757d;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .chart-container {
+      padding: 20px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .status-text {
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      
+      .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
 <body>
-  <div id="alertBanner" class="alert-banner"> ⚠️ PERINGATAN! ⚠️ </div>
-
+  <div id="alertBanner" class="alert-banner">
+    ⚠️ PERINGATAN BANJIR! HARAP WASPADA! ⚠️
+  </div>
+  
   <div class="dashboard">
     <div class="card main-card">
       <h1 style="text-align: center; margin-bottom: 20px;">Sistem Peringatan Banjir</h1>
@@ -18,7 +208,7 @@
         <canvas id="waterLevelChart"></canvas>
       </div>
     </div>
-
+    
     <div class="card status-card">
       <h2>Status Level Air</h2>
       <div id="statusIndicator" class="status-indicator safe">
@@ -41,7 +231,7 @@
         </div>
       </div>
     </div>
-
+    
     <div class="card">
       <h2>Informasi Level Air</h2>
       <div class="info-grid">
@@ -64,12 +254,191 @@
       </div>
       
       <div class="controls">
-        <button class="btn btn-primary" onclick="simulateData()">Simulasi Data</button>
-        <button class="btn btn-primary" onclick="resetData()">Reset Data</button>
+        <button class="btn" onclick="simulateData()">Simulasi Data</button>
+        <button class="btn" onclick="resetData()">Reset Data</button>
+        <button class="btn" onclick="toggleAutoUpdate()">Auto Update</button>
       </div>
     </div>
   </div>
 
-  <script src="scripts.js"></script>
+  <script>
+    let waterLevel = 0;
+    let waterLevelData = [];
+    let autoUpdateInterval = null;
+    let chart = null;
+
+    function simulateData() {
+      // Simulate more realistic water level changes
+      const change = (Math.random() - 0.5) * 2; // Random change between -1 and 1
+      waterLevel = Math.max(0, Math.min(20, waterLevel + change));
+      
+      updateStatus();
+      waterLevelData.push(waterLevel);
+      
+      // Keep only last 20 data points for better visualization
+      if (waterLevelData.length > 20) {
+        waterLevelData.shift();
+      }
+      
+      updateChart();
+      updateStats();
+      checkAlertStatus();
+    }
+
+    function resetData() {
+      waterLevel = 0;
+      waterLevelData = [];
+      updateStatus();
+      updateChart();
+      updateStats();
+      document.getElementById('alertBanner').style.display = 'none';
+      
+      // Stop auto update if it's running
+      if (autoUpdateInterval) {
+        clearInterval(autoUpdateInterval);
+        autoUpdateInterval = null;
+      }
+    }
+
+    function toggleAutoUpdate() {
+      if (autoUpdateInterval) {
+        clearInterval(autoUpdateInterval);
+        autoUpdateInterval = null;
+      } else {
+        autoUpdateInterval = setInterval(simulateData, 1000);
+      }
+    }
+
+    function updateStatus() {
+      const statusIndicator = document.getElementById("statusIndicator");
+      const statusText = document.getElementById("statusText");
+      const currentLevel = document.querySelector(".current-level");
+      
+      currentLevel.textContent = `${waterLevel.toFixed(1)} m`;
+      
+      // Update water level visualization
+      statusIndicator.style.setProperty('--water-height', `${(waterLevel / 20) * 100}%`);
+      
+      if (waterLevel < 10) {
+        statusIndicator.className = "status-indicator safe";
+        statusText.textContent = "Status: Normal";
+        statusText.style.color = 'var(--safe-color)';
+      } else if (waterLevel < 15) {
+        statusIndicator.className = "status-indicator warning";
+        statusText.textContent = "Status: Waspada";
+        statusText.style.color = 'var(--warning-color)';
+      } else {
+        statusIndicator.className = "status-indicator danger";
+        statusText.textContent = "Status: Bahaya";
+        statusText.style.color = 'var(--danger-color)';
+      }
+    }
+
+    function checkAlertStatus() {
+      const alertBanner = document.getElementById('alertBanner');
+      if (waterLevel >= 15) {
+        alertBanner.style.display = 'block';
+      } else {
+        alertBanner.style.display = 'none';
+      }
+    }
+
+    function updateChart() {
+      const ctx = document.getElementById("waterLevelChart").getContext("2d");
+      
+      if (chart) {
+        chart.destroy();
+      }
+      
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: waterLevelData.map((_, i) => `Data ${i + 1}`),
+          datasets: [{
+            label: 'Level Air (m)',
+            data: waterLevelData,
+            fill: true,
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            borderColor: 'rgba(0, 123, 255, 1)',
+            borderWidth: 2,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Grafik Level Air'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 20,
+              title: {
+                display: true,
+                text: 'Level Air (m)'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Waktu'
+              }
+            }
+          },
+          animation: {
+            duration: 500
+          }
+        }
+      });
+    }
+
+    function updateStats() {
+      const minLevel = document.getElementById("minLevel");
+      const maxLevel = document.getElementById("maxLevel");
+      const avgLevel = document.getElementById("avgLevel");
+      
+      if (waterLevelData.length > 0) {
+        const min = Math.min(...waterLevelData);
+        const max = Math.max(...waterLevelData);
+        const avg = waterLevelData.reduce((a, b) => a + b, 0) / waterLevelData.length;
+        
+        minLevel.textContent = `${min.toFixed(1)} m`;
+        maxLevel.textContent = `${max.toFixed(1)} m`;
+        avgLevel.textContent = `${avg.toFixed(1)} m`;
+        
+        // Add color coding to stats
+        minLevel.style.color = getColorForLevel(min);
+        maxLevel.style.color = getColorForLevel(max);
+        avgLevel.style.color = getColorForLevel(avg);
+      } else {
+        minLevel.textContent = "0.0 m";
+        maxLevel.textContent = "0.0 m";
+        avgLevel.textContent = "0.0 m";
+        
+        // Reset colors
+        minLevel.style.color = 'var(--primary-color)';
+        maxLevel.style.color = 'var(--primary-color)';
+        avgLevel.style.color = 'var(--primary-color)';
+      }
+    }
+
+    function getColorForLevel(level) {
+      if (level < 10) return 'var(--safe-color)';
+      if (level < 15) return 'var(--warning-color)';
+      return 'var(--danger-color)';
+    }
+
+    // Initialize the chart on page load
+    window.onload = function() {
+      updateChart();
+    };
+  </script>
 </body>
 </html>

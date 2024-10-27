@@ -12,7 +12,7 @@ function simulateData() {
   waterLevelData.push(waterLevel);
   
   // Remove this line if you want to keep all data points
-  if (waterLevelData.length > 20) {
+  if (waterLevelData.length > 30) {
   waterLevelData.shift();
   }
   

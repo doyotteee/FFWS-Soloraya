@@ -4,26 +4,29 @@ let labels = [];
 let autoUpdateInterval = null;
 let chart = null;
 
-function simulateData() {
-  // Simulate more realistic water level changes
-  const change = (Math.random() - 0.5) * 2; // Random change between -1 and 1
-  waterLevel = Math.max(0, Math.min(20, waterLevel + change));
+async function fetchData() {
+  try {
+    const response = await fetch("http://localhost:5000/api/sensor-data");
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from API");
+    }
+    const data = await response.json();
+    
+    // Assuming `data` is an array of sensor readings
+    updateData(data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+function updateData(data) {
+  waterLevelData = data.map((item) => item.waterLevel);
+  labels = data.map((item) => new Date(item.timestamp).toLocaleTimeString());
+
+  // Update current water level
+  waterLevel = waterLevelData[waterLevelData.length - 1] || 0;
   
   updateStatus();
-  waterLevelData.push(waterLevel);
-
-  // Get current time
-  const now = new Date();
-  const timeString = now.toLocaleTimeString();
-
-  labels.push(timeString);
-  
-  // Remove this line if you want to keep all data points
-  // if (waterLevelData.length > 20) {
-  //   waterLevelData.shift();
-  //   labels.shift();
-  // }
-  
   updateChart();
 }
 
@@ -40,7 +43,7 @@ function toggleAutoUpdate() {
     clearInterval(autoUpdateInterval);
     autoUpdateInterval = null;
   } else {
-    autoUpdateInterval = setInterval(simulateData, 1000);
+    autoUpdateInterval = setInterval(fetchData, 1000);
   }
 }
 
@@ -51,9 +54,9 @@ function updateStatus() {
   const minLevelElem = document.getElementById('minLevel');
   const maxLevelElem = document.getElementById('maxLevel');
   const avgLevelElem = document.getElementById('avgLevel');
-  
+
   currentLevelElem.textContent = `${waterLevel.toFixed(1)} m`;
-  
+
   if (waterLevel < 5) {
     statusIndicator.className = 'status-indicator safe';
     statusText.textContent = 'Status: Normal';
@@ -67,7 +70,7 @@ function updateStatus() {
     statusIndicator.className = 'status-indicator danger';
     statusText.textContent = 'Status: Kritis';
   }
-  
+
   if (waterLevelData.length > 0) {
     minLevelElem.textContent = `${Math.min(...waterLevelData).toFixed(1)} m`;
     maxLevelElem.textContent = `${Math.max(...waterLevelData).toFixed(1)} m`;
@@ -79,16 +82,12 @@ function updateStatus() {
   }
 
   const alertBanner = document.getElementById('alertBanner');
-  if (waterLevel >= 5) {
-    alertBanner.style.display = 'block';
-  } else {
-    alertBanner.style.display = 'none';
-  }
+  alertBanner.style.display = waterLevel >= 5 ? 'block' : 'none';
 }
 
 function updateChart() {
   const ctx = document.getElementById('waterLevelChart').getContext('2d');
-  
+
   if (!chart) {
     chart = new Chart(ctx, {
       type: 'line',

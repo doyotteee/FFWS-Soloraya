@@ -4,20 +4,13 @@ let labels = [];
 let autoUpdateInterval = null;
 let chart = null;
 
-async function fetchData() {
-  try {
-    const response = await fetch("http://localhost:5000/api/sensor-data");
-    if (!response.ok) {
-      throw new Error("Failed to fetch data from API");
-    }
-    const data = await response.json();
-    
-    // Assuming `data` is an array of sensor readings
-    updateData(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
+// Menghubungkan ke server Socket.IO
+const socket = io();
+
+// Menangani pembaruan data realtime
+socket.on('sensorData', (data) => {
+  updateData(data);
+});
 
 function updateData(data) {
   waterLevelData = data.map((item) => item.waterLevel);

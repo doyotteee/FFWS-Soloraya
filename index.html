@@ -24,24 +24,9 @@
         <div class="current-level">0.0 m</div>
       </div>
       <div id="statusText" class="status-text">Status: Normal</div>
-      
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Level Terendah</div>
-          <div id="minLevel" class="info-value">0.0 m</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Level Tertinggi</div>
-          <div id="maxLevel" class="info-value">0.0 m</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Rata-rata</div>
-          <div id="avgLevel" class="info-value">0.0 m</div>
-        </div>
-      </div>
     </div>
     
-    <div class="card">
+    <div class="card info-card">
       <h2>Informasi Level Air</h2>
       <div class="info-grid">
         <div class="info-item">
@@ -61,18 +46,27 @@
           <div class="info-value">> 15 m</div>
         </div>
       </div>
-      
-      <div class="controls">
-        <button class="btn" onclick="fetchData()">Update Data</button>
-        <button class="btn" onclick="resetData()">Reset Data</button>
-        <button class="btn" onclick="toggleAutoUpdate()">Auto Update</button>
-      </div>
     </div>
 
     <div class="card chart-card">
       <h2>Grafik Level Air</h2>
       <div class="chart-container">
         <canvas id="waterLevelChart"></canvas>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Level Terendah</div>
+          <div id="minLevel" class="info-value">0.0 m</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Level Tertinggi</div>
+          <div id="maxLevel" class="info-value">0.0 m</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" onclick="fetchData()">Update Data</button>
+        <button class="btn" onclick="resetData()">Reset Data</button>
+        <button class="btn" onclick="toggleAutoUpdate()">Auto Update</button>
       </div>
     </div>
   </div>

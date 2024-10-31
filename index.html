@@ -15,7 +15,7 @@
   
   <div class="dashboard">
     <div class="card main-card">
-      <h1 style="text-align: center; margin-bottom: 20px;">Sistem Peringatan Banjir</h1>
+      <h1>Sistem Peringatan Banjir</h1>
     </div>
     
     <div class="card status-card">
@@ -24,6 +24,18 @@
         <div class="current-level">0.0 m</div>
       </div>
       <div id="statusText" class="status-text">Status: Normal</div>
+    </div>
+    
+    <div class="card chart-card">
+      <h2>Grafik Level Air</h2>
+      <div class="chart-container">
+        <canvas id="waterLevelChart"></canvas>
+      </div>
+      <div class="controls">
+        <button class="btn" onclick="fetchData()">Update Data</button>
+        <button class="btn" onclick="resetData()">Reset Data</button>
+        <button class="btn" onclick="toggleAutoUpdate()">Auto Update</button>
+      </div>
     </div>
     
     <div class="card info-card">
@@ -45,15 +57,6 @@
           <div class="info-label">Batas Bahaya</div>
           <div class="info-value">> 15 m</div>
         </div>
-      </div>
-    </div>
-
-    <div class="card chart-card">
-      <h2>Grafik Level Air</h2>
-      <div class="chart-container">
-        <canvas id="waterLevelChart"></canvas>
-      </div>
-      <div class="info-grid">
         <div class="info-item">
           <div class="info-label">Level Terendah</div>
           <div id="minLevel" class="info-value">0.0 m</div>
@@ -63,13 +66,9 @@
           <div id="maxLevel" class="info-value">0.0 m</div>
         </div>
       </div>
-      <div class="controls">
-        <button class="btn" onclick="fetchData()">Update Data</button>
-        <button class="btn" onclick="resetData()">Reset Data</button>
-        <button class="btn" onclick="toggleAutoUpdate()">Auto Update</button>
-      </div>
     </div>
   </div>
+  
   <script src="scripts.js"></script>
 </body>
 </html>

@@ -21,7 +21,7 @@ async function fetchData() {
 
 function updateData(data) {
   waterLevelData = data.map((item) => item.waterLevel);
-  labels = data.map((item) => new Date(item.timestamp).toLocaleTimeString());
+  labels = data.map((item, index) => index + 1);
 
   // Update current water level
   waterLevel = waterLevelData[waterLevelData.length - 1] || 0;
@@ -53,7 +53,6 @@ function updateStatus() {
   const currentLevelElem = document.querySelector('.current-level');
   const minLevelElem = document.getElementById('minLevel');
   const maxLevelElem = document.getElementById('maxLevel');
-  const avgLevelElem = document.getElementById('avgLevel');
 
   currentLevelElem.textContent = `${waterLevel.toFixed(1)} m`;
 
@@ -74,11 +73,9 @@ function updateStatus() {
   if (waterLevelData.length > 0) {
     minLevelElem.textContent = `${Math.min(...waterLevelData).toFixed(1)} m`;
     maxLevelElem.textContent = `${Math.max(...waterLevelData).toFixed(1)} m`;
-    avgLevelElem.textContent = `${(waterLevelData.reduce((a, b) => a + b, 0) / waterLevelData.length).toFixed(1)} m`;
   } else {
     minLevelElem.textContent = '0.0 m';
     maxLevelElem.textContent = '0.0 m';
-    avgLevelElem.textContent = '0.0 m';
   }
 
   const alertBanner = document.getElementById('alertBanner');
@@ -110,15 +107,9 @@ function updateChart() {
             max: 20
           },
           x: {
-            type: 'time',
-            time: {
-              unit: 'minute',
-              tooltipFormat: 'HH:mm:ss',
-              displayFormats: {
-                second: 'HH:mm:ss',
-                minute: 'HH:mm',
-                hour: 'HH:mm'
-              }
+            title: {
+              display: true,
+              text: 'Waktu'
             }
           }
         }

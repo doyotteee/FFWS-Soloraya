@@ -35,7 +35,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(12, 1fr);
   gap: 20px;
   padding: 20px;
   background-color: rgba(255, 255, 255, 0.9);
@@ -54,13 +54,14 @@ body {
 }
 .main-card {
   grid-column: 1 / -1;
+  text-align: center;
 }
 .status-card {
+  grid-column: span 4;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 25px;
 }
 .status-indicator {
   width: 150px;
@@ -89,6 +90,12 @@ body {
 .safe { background-color: var(--safe-color); }
 .warning { background-color: var(--warning-color); }
 .danger { background-color: var(--danger-color); }
+.chart-card {
+  grid-column: span 8;
+}
+.info-card {
+  grid-column: span 4;
+}
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -140,10 +147,8 @@ body {
   transform: translateY(0);
 }
 .chart-container {
-  padding: 20px;
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 400px;
 }
 .status-text {
   font-size: 20px;
@@ -151,9 +156,32 @@ body {
   margin-top: 15px;
   color: #333;
 }
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .status-card {
+    grid-column: span 8;
+  }
+  
+  .chart-card {
+    grid-column: span 8;
+  }
+  
+  .info-card {
+    grid-column: span 8;
+  }
+}
 @media (max-width: 768px) {
   .dashboard {
     grid-template-columns: 1fr;
+  }
+  
+  .status-card,
+  .chart-card,
+  .info-card {
+    grid-column: span 1;
   }
   
   .info-grid {

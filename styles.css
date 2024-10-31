@@ -79,3 +79,112 @@ body {
 }
 .status-indicator::after {
   content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background-color: rgba(255,255,255,0.2);
+  transition: height 0.5s ease;
+}
+.safe { background-color: var(--safe-color); }
+.warning { background-color: var(--warning-color); }
+.danger { background-color: var(--danger-color); }
+.chart-card {
+  grid-column: span 8;
+}
+.info-card {
+  grid-column: span 4;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 25px;
+}
+.info-item {
+  background: var(--background-color);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+.info-item:hover {
+  transform: scale(1.05);
+}
+.info-label {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 5px;
+}
+.info-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+.btn {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+}
+.btn:active {
+  transform: translateY(0);
+}
+.chart-container {
+  position: relative;
+  height: 400px;
+}
+.status-text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 15px;
+  color: #333;
+}
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .status-card {
+    grid-column: span 8;
+  }
+  
+  .chart-card {
+    grid-column: span 8;
+  }
+  
+  .info-card {
+    grid-column: span 8;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  .status-card,
+  .chart-card,
+  .info-card {
+    grid-column: span 1;
+  }
+  
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

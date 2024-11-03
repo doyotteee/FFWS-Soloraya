@@ -202,6 +202,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
   .dashboard {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -245,6 +249,10 @@ body {
 }
 
 @media (max-width: 480px) {
+  body {
+    background-attachment: scroll;
+  }
+
   .dashboard {
     padding: 5px;
   }

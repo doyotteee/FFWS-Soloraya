@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-const os = require('os'); // Import os module
+const os = require('os');
 const port = 3000;
 
 // Fungsi untuk mendapatkan alamat IP lokal
@@ -19,7 +19,7 @@ function getLocalIP() {
   return 'localhost';
 }
 
-// Melayani file statis dari folder 'public'
+// Konfigurasi untuk melayani file statis
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {

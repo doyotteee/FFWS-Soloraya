@@ -1,41 +1,43 @@
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const path = require('path');
+
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const os = require('os');
-const port = 3000;
+const server = http.createServer(app);
+const io = socketIo(server);
 
-// Fungsi untuk mendapatkan alamat IP lokal
-function getLocalIP() {
-  const interfaces = os.networkInterfaces();
-  for (const interfaceName in interfaces) {
-    const iface = interfaces[interfaceName];
-    for (const alias of iface) {
-      if (alias.family === 'IPv4' && !alias.internal) {
-        return alias.address;
-      }
-    }
-  }
-  return 'localhost';
-}
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Konfigurasi untuk melayani file statis
-app.use(express.static('public'));
+let waterLevelHistory = [];
+let currentWaterLevel = 0.0;
 
 io.on('connection', (socket) => {
-  console.log('Perangkat terhubung');
+  socket.emit('waterLevelData', { currentLevel: currentWaterLevel, history: waterLevelHistory });
 
-  socket.on('sensorData', (data) => {
-    console.log('Data sensor diterima:', data);
-    io.emit('sensorData', data);
+  socket.on('requestData', () => {
+    socket.emit('waterLevelData', { currentLevel: currentWaterLevel, history: waterLevelHistory });
   });
 
-  socket.on('disconnect', () => {
-    console.log('Perangkat terputus');
+  socket.on('resetData', () => {
+    waterLevelHistory = [];
+    currentWaterLevel = 0.0;
+    io.emit('waterLevelData', { currentLevel: currentWaterLevel, history: waterLevelHistory });
   });
 });
 
-http.listen(port, () => {
-  const localIP = getLocalIP();
-  console.log(`Server berjalan di http://${localIP}:${port}`);
-});
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Simulasi perubahan level air (Anda bisa menghubungkan ini dengan sensor nyata)
+setInterval(() => {
+  const randomChange = (Math.random() * 2 - 1).toFixed(2);
+  currentWaterLevel = Math.max(0, (parseFloat(currentWaterLevel) + parseFloat(randomChange)).toFixed(2));
+  waterLevelHistory.push({ time: new Date().toLocaleTimeString(), level: currentWaterLevel });
+
+  if (waterLevelHistory.length > 20) {
+    waterLevelHistory.shift();
+  }
+
+  io.emit('waterLevelData', { currentLevel: currentWaterLevel, history: waterLevelHistory });
+}, 5000);

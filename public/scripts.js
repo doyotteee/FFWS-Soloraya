@@ -1,65 +1,27 @@
 const socket = io();
-const alertBanner = document.getElementById('alertBanner');
-const statusIndicator = document.getElementById('statusIndicator');
-const statusText = document.getElementById('statusText');
-const minLevel = document.getElementById('minLevel');
-const maxLevel = document.getElementById('maxLevel');
-const ctx = document.getElementById('waterLevelChart').getContext('2d');
 
-let waterLevelData = [];
-let labels = [];
-let autoUpdate = false;
-
-const chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: 'Level Air (m)',
-      data: waterLevelData,
-      backgroundColor: 'rgba(0, 123, 255, 0.5)',
-      borderColor: 'rgba(0, 123, 255, 1)',
-      borderWidth: 1,
-      fill: true,
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
+socket.on('waterLevelData', (data) => {
+  updateWaterLevel(data.currentLevel);
+  updateChart(data.history);
 });
 
-socket.on('sensorData', (data) => {
-  updateWaterLevel(data);
-});
+function updateWaterLevel(level) {
+  const statusIndicator = document.getElementById('statusIndicator');
+  const statusText = document.getElementById('statusText');
+  const currentLevel = document.querySelector('.current-level');
+  const alertBanner = document.getElementById('alertBanner');
 
-function updateWaterLevel(data) {
-  const currentLevel = parseFloat(data.level);
-  waterLevelData.push(currentLevel);
-  labels.push(new Date().toLocaleTimeString());
+  currentLevel.textContent = `${level} m`;
 
-  chart.update();
-
-  const max = Math.max(...waterLevelData);
-  const min = Math.min(...waterLevelData);
-
-  maxLevel.textContent = `${max.toFixed(2)} m`;
-  minLevel.textContent = `${min.toFixed(2)} m`;
-
-  statusIndicator.querySelector('.current-level').textContent = `${currentLevel.toFixed(2)} m`;
-
-  if (currentLevel >= 15) {
+  if (level > 15) {
     statusIndicator.className = 'status-indicator danger';
     statusText.textContent = 'Status: Bahaya';
     alertBanner.style.display = 'block';
-  } else if (currentLevel >= 10) {
+  } else if (level > 10) {
     statusIndicator.className = 'status-indicator warning';
     statusText.textContent = 'Status: Waspada';
     alertBanner.style.display = 'none';
-  } else if (currentLevel >= 5) {
+  } else if (level > 5) {
     statusIndicator.className = 'status-indicator early-warning';
     statusText.textContent = 'Status: Peringatan Dini';
     alertBanner.style.display = 'none';
@@ -70,32 +32,52 @@ function updateWaterLevel(data) {
   }
 }
 
+function updateChart(history) {
+  const ctx = document.getElementById('waterLevelChart').getContext('2d');
+
+  if (window.waterLevelChart) {
+    window.waterLevelChart.data.labels = history.map(entry => entry.time);
+    window.waterLevelChart.data.datasets[0].data = history.map(entry => entry.level);
+    window.waterLevelChart.update();
+  } else {
+    window.waterLevelChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: history.map(entry => entry.time),
+        datasets: [{
+          label: 'Level Air',
+          data: history.map(entry => entry.level),
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          x: { display: true, title: { display: true, text: 'Waktu' }},
+          y: { display: true, title: { display: true, text: 'Level Air (m)' }}
+        }
+      }
+    });
+  }
+}
+
 function fetchData() {
-  const level = Math.random() * 20;
-  updateWaterLevel({ level });
+  socket.emit('requestData');
 }
 
 function resetData() {
-  waterLevelData = [];
-  labels = [];
-  chart.update();
-  statusIndicator.className = 'status-indicator safe';
-  statusText.textContent = 'Status: Normal';
-  minLevel.textContent = '0.0 m';
-  maxLevel.textContent = '0.0 m';
-  alertBanner.style.display = 'none';
+  socket.emit('resetData');
 }
+
+let autoUpdate = false;
+let autoUpdateInterval;
 
 function toggleAutoUpdate() {
   autoUpdate = !autoUpdate;
   if (autoUpdate) {
-    autoUpdateData();
-  }
-}
-
-function autoUpdateData() {
-  if (autoUpdate) {
-    fetchData();
-    setTimeout(autoUpdateData, 2000);
+    autoUpdateInterval = setInterval(fetchData, 5000);
+  } else {
+    clearInterval(autoUpdateInterval);
   }
 }

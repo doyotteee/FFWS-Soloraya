@@ -12,7 +12,7 @@ body {
   margin: 0;
   padding: 20px;
   min-height: 100vh;
-  background: url('img/foto-solo.jpg') no-repeat center center fixed;
+  background: url('foto-solo.jpg') no-repeat center center fixed;
   background-size: cover;
 }
 
@@ -149,17 +149,24 @@ body {
 }
 
 .btn {
-  padding: 10px 20px;
-  background: var(--primary-color);
+  background-color: var(--primary-color);
   color: white;
+  padding: 12px 25px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 16px;
 }
 
 .btn:hover {
-  background: darken(var(--primary-color), 10%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .chart-container {
@@ -167,12 +174,71 @@ body {
   height: 400px;
 }
 
-.hidden {
-  display: none;
+.status-text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 15px;
+  color: #333;
+}
+
+/* Responsiveness */
+
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .status-card {
+    grid-column: span 8;
+  }
+
+  .chart-card {
+    grid-column: span 8;
+  }
+
+  .info-card {
+    grid-column: span 8;
+  }
 }
 
 @media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
   .dashboard {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 10px;
+  }
+
+  .status-card {
+    grid-column: span 4;
+  }
+
+  .chart-card {
+    grid-column: span 4;
+  }
+
+  .info-card {
+    grid-column: span 4;
+  }
+
+  .chart-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard {
+    grid-template-columns: repeat(1, 1fr);
+    padding: 10px;
+  }
+
+  .status-card, .chart-card, .info-card {
+    grid-column: span 1;
+  }
+
+  .controls {
+    flex-direction: column;
   }
 }

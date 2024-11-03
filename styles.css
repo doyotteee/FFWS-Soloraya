@@ -1,0 +1,278 @@
+:root {
+  --safe-color: #28a745;
+  --warning-color: #ffc107; 
+  --danger-color: #dc3545;
+  --early-warning-color: #ff9800;
+  --primary-color: #007bff;
+  --background-color: #f8f9fa;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  background: url('img/foto-solo.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.alert-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--danger-color);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+  display: none;
+  z-index: 1000;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.5; }
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.main-card {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.status-card {
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-indicator {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
+  transition: all 0.3s ease;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.status-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background-color: rgba(255,255,255,0.2);
+  transition: height 0.5s ease;
+}
+
+.safe { background-color: var(--safe-color); }
+.warning { background-color: var(--warning-color); }
+.danger { background-color: var(--danger-color); }
+
+.chart-card {
+  grid-column: span 8;
+}
+
+.info-card {
+  grid-column: span 4;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.info-item {
+  background: var(--background-color);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.info-item:hover {
+  transform: scale(1.05);
+}
+
+.info-label {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.chart-container {
+  position: relative;
+  height: 400px;
+}
+
+.status-text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 15px;
+  color: #333;
+}
+
+/* Responsiveness */
+
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .status-card {
+    grid-column: span 8;
+  }
+
+  .chart-card {
+    grid-column: span 8;
+  }
+
+  .info-card {
+    grid-column: span 8;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .dashboard {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .status-card,
+  .chart-card,
+  .info-card {
+    grid-column: span 1;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .status-indicator {
+    width: 120px;
+    height: 120px;
+    font-size: 22px;
+  }
+
+  .status-text {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .dashboard {
+    padding: 5px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-indicator {
+    width: 100px;
+    height: 100px;
+    font-size: 18px;
+  }
+
+  .status-text {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 8px;
+    font-size: 12px;
+  }
+}

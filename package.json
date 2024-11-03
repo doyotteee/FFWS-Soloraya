@@ -4,13 +4,14 @@
     "description": "Flood Forecasting Warning System for Solo Raya",
     "main": "server.js",
     "scripts": {
-        "start": "node server.js"
+      "start": "node server.js"
     },
     "dependencies": {
-        "express": "^4.21.1",
-        "socket.io": "^4.8.1"
+      "express": "^4.18.2",
+      "socket.io": "^4.0.1"
     },
+    "devDependencies": {},
     "author": "",
-    "license": "ISC",
-    "keywords": []
-}
+    "license": "ISC"
+  }
+  

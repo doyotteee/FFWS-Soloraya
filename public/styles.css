@@ -202,21 +202,29 @@ body {
 }
 
 @media (max-width: 768px) {
-  body {
-    background-attachment: scroll;
-  }
-
   .dashboard {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 10px;
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  .card {
-    padding: 15px;
+  .main-card {
+    grid-column: span 4;
   }
 
   .status-card, .chart-card, .info-card {
-    grid-column: span 1;
+    grid-column: span 4;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-card {
+    grid-column: span 2;
+  }
+
+  .status-card, .chart-card, .info-card {
+    grid-column: span 2;
   }
 }

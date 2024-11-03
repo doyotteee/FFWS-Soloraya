@@ -1,0 +1,16 @@
+{
+    "name": "ffws-soloraya",
+    "version": "1.0.0",
+    "description": "Flood Forecasting Warning System for Solo Raya",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.1",
+        "socket.io": "^4.8.1"
+    },
+    "author": "",
+    "license": "ISC",
+    "keywords": []
+}

@@ -1,6 +1,6 @@
 :root {
   --safe-color: #28a745;
-  --warning-color: #ffc107;
+  --warning-color: #ffc107; 
   --danger-color: #dc3545;
   --early-warning-color: #ff9800;
   --primary-color: #007bff;
@@ -126,43 +126,153 @@ body {
 }
 
 .info-item:hover {
-  transform: translateY(-5px);
+  transform: scale(1.05);
 }
 
 .info-label {
   font-size: 14px;
-  font-weight: 600;
-  color: #555;
+  color: #6c757d;
+  margin-bottom: 5px;
 }
 
 .info-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: var(--primary-color);
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
 }
 
 .btn {
   background-color: var(--primary-color);
   color: white;
-  padding: 10px 20px;
+  padding: 12px 25px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 15px;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 16px;
 }
 
 .btn:hover {
-  background-color: darken(var(--primary-color), 10%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.chart-container {
+  position: relative;
+  height: 400px;
+}
+
+.status-text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 15px;
+  color: #333;
+}
+
+/* Responsiveness */
+
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .status-card {
+    grid-column: span 8;
+  }
+
+  .chart-card {
+    grid-column: span 8;
+  }
+
+  .info-card {
+    grid-column: span 8;
+  }
 }
 
 @media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
   .dashboard {
     grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
   }
-  
-  .status-card, .chart-card, .info-card {
-    grid-column: span 12;
+
+  .status-card,
+  .chart-card,
+  .info-card {
+    grid-column: span 1;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .status-indicator {
+    width: 120px;
+    height: 120px;
+    font-size: 22px;
+  }
+
+  .status-text {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .dashboard {
+    padding: 5px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-indicator {
+    width: 100px;
+    height: 100px;
+    font-size: 18px;
+  }
+
+  .status-text {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 8px;
+    font-size: 12px;
   }
 }

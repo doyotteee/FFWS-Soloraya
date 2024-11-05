@@ -4,19 +4,10 @@ let labels = [];
 let autoUpdateInterval = null;
 let chart = null;
 
-// Menghubungkan ke server Socket.IO
-const socket = io();
-
-// Menangani pembaruan data realtime
-socket.on('sensorData', (data) => {
-  updateData(data);
-});
-
 function updateData(data) {
-  waterLevelData = data.map((item) => item.waterLevel);
+  waterLevelData = data.map((item) => parseFloat(item.water_level));
   labels = data.map((item, index) => index + 1);
 
-  // Update current water level
   waterLevel = waterLevelData[waterLevelData.length - 1] || 0;
   
   updateStatus();
@@ -36,7 +27,7 @@ function toggleAutoUpdate() {
     clearInterval(autoUpdateInterval);
     autoUpdateInterval = null;
   } else {
-    autoUpdateInterval = setInterval(fetchData, 1000);
+    autoUpdateInterval = setInterval(fetchData, 5000);
   }
 }
 
@@ -117,7 +108,17 @@ function updateChart() {
   }
 }
 
+function fetchData() {
+  fetch('get_data.php')
+    .then(response => response.json())
+    .then(data => {
+      updateData(data);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  fetchData();
+  autoUpdateInterval = setInterval(fetchData, 5000);
   updateStatus();
   updateChart();
 });

@@ -1,6 +1,6 @@
 :root {
   --safe-color: #28a745;
-  --warning-color: #ffc107; 
+  --warning-color: #ffc107;
   --danger-color: #dc3545;
   --early-warning-color: #ff9800;
   --primary-color: #007bff;
@@ -110,23 +110,6 @@ body {
 .chart-container {
   width: 100%;
   height: 400px;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 10px 20px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: white;
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .info-grid {

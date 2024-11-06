@@ -1,15 +1,13 @@
 <?php
 include 'database.php';
 
-$sql = "SELECT * FROM water_levels ORDER BY id DESC LIMIT 10";
+$sql = "SELECT * FROM water_levels ORDER BY id DESC LIMIT 1";
 $result = $conn->query($sql);
 
-$data = array();
+$data = null;
 
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
+    $data = $result->fetch_assoc();
 }
 
 header('Content-Type: application/json');

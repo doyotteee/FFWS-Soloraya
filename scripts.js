@@ -1,37 +1,23 @@
-let waterLevel = 0;
 let waterLevelData = [];
 let labels = [];
-let autoUpdateInterval = null;
 let chart = null;
+let socket = null;
 
 function updateData(data) {
-  waterLevelData = data.map((item) => parseFloat(item.water_level));
-  labels = data.map((item, index) => index + 1);
+  waterLevelData.push(parseFloat(data[0].water_level));
+  labels.push(new Date(data[0].timestamp).toLocaleTimeString());
 
-  waterLevel = waterLevelData[waterLevelData.length - 1] || 0;
-  
-  updateStatus();
-  updateChart();
-}
-
-function resetData() {
-  waterLevel = 0;
-  waterLevelData = [];
-  labels = [];
-  updateStatus();
-  updateChart();
-}
-
-function toggleAutoUpdate() {
-  if (autoUpdateInterval) {
-    clearInterval(autoUpdateInterval);
-    autoUpdateInterval = null;
-  } else {
-    autoUpdateInterval = setInterval(fetchData, 5000);
+  if (waterLevelData.length > 10) {
+    waterLevelData.shift();
+    labels.shift();
   }
+
+  updateStatus();
+  updateChart();
 }
 
 function updateStatus() {
+  const waterLevel = waterLevelData[waterLevelData.length - 1] || 0;
   const statusIndicator = document.getElementById('statusIndicator');
   const statusText = document.getElementById('statusText');
   const currentLevelElem = document.querySelector('.current-level');
@@ -108,17 +94,26 @@ function updateChart() {
   }
 }
 
-function fetchData() {
-  fetch('get_data.php')
-    .then(response => response.json())
-    .then(data => {
-      updateData(data);
-    });
+function setupWebSocket() {
+  socket = new WebSocket('ws://localhost:8080');
+
+  socket.onopen = () => {
+    document.getElementById('connectionStatus').textContent = 'Terhubung';
+  };
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    updateData([data]);
+  };
+
+  socket.onclose = () => {
+    document.getElementById('connectionStatus').textContent = 'Terputus';
+    setTimeout(setupWebSocket, 1000);
+  };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetchData();
-  autoUpdateInterval = setInterval(fetchData, 5000);
+  setupWebSocket();
   updateStatus();
   updateChart();
 });

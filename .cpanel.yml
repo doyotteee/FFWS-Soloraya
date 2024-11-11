@@ -1,5 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYMENT_SOURCE=/home/ffws7025/ffws7025/public_html
-    - /bin/cp -a $DEPLOYMENT_SOURCE/. /home/ffws7025/public_html

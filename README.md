@@ -1,2 +1,0 @@
-# FFWS soloraya
-web

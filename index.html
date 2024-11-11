@@ -6,18 +6,22 @@
   <title>Flood Forecasting Warning System</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <!-- Banner Peringatan -->
   <div id="alertBanner" class="alert-banner">
     ⚠️ PERINGATAN BANJIR! HARAP WASPADA! ⚠️
   </div>
   
+  <!-- Dashboard Utama -->
   <div class="dashboard">
+    <!-- Judul Sistem -->
     <div class="card main-card">
       <h1>Flood Forecasting Warning System</h1>
     </div>
     
+    <!-- Status Level Air -->
     <div class="card status-card">
       <h2>Status Level Air</h2>
       <div id="statusIndicator" class="status-indicator safe">
@@ -26,11 +30,13 @@
       <div id="statusText" class="status-text">Status: Normal</div>
     </div>
     
+    <!-- Status Koneksi -->
     <div class="card status-card">
       <h2>Status Koneksi</h2>
       <div id="connectionStatus" class="status-text">Menghubungkan...</div>
     </div>
     
+    <!-- Grafik Level Air -->
     <div class="card chart-card">
       <h2>Grafik Level Air</h2>
       <div class="chart-container">
@@ -38,6 +44,7 @@
       </div>
     </div>
     
+    <!-- Informasi Level Air -->
     <div class="card info-card">
       <h2>Informasi Level Air</h2>
       <div class="info-grid">
